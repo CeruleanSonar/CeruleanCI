@@ -44,11 +44,13 @@ jobs:
       with:
         node-version: lts/*
     - name: Prebuild
+      id: before-build
       run: |
         cd ./sonarview
         npm ci
         # patch repo name so electron-builder puts releases in THIS repo
         npm pkg set repository.url="${{ github.repositoryUrl }}"
+        echo hg-commit=$(hg id -i) >> "$GITHUB_OUTPUT"
     - name: Add code signing dependencies
       if: runner.os == 'macOS'
       run: |
@@ -66,3 +68,9 @@ jobs:
       env:
         # for creating github release
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/upload-artifact@v4
+      with:
+        # Name of the artifact to upload.
+        # Optional. Default is 'artifact'
+        name: packaged-${{ runner.os }}-${{ steps.before-build.outputs.hg-commit }}
+        path: sonarview/dist/electron/Packaged
