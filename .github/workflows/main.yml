@@ -68,9 +68,12 @@ jobs:
       env:
         # for creating github release
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/upload-artifact@v4
+    - name: Upload as artifact
+      uses: actions/upload-artifact@v4
       with:
         # Name of the artifact to upload.
         # Optional. Default is 'artifact'
         name: packaged-${{ runner.os }}-${{ steps.before-build.outputs.hg-commit }}
-        path: sonarview/dist/electron/Packaged
+        path: |
+          sonarview/dist/electron/Packaged
+          !sonarview/dist/electron/Packaged/*unpacked
